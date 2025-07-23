@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}ログイン - 出席マネージャー{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="card-title text-center">ログイン</h2>
+        <form method="POST" action="{{ url_for('login') }}">
+          <input type="hidden" name="action" value="login">
+          <div class="mb-3">
+            <label for="loginEmail" class="form-label">メールアドレス</label>
+            <input type="email" class="form-control" id="loginEmail" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label for="loginPassword" class="form-label">パスワード</label>
+            <input type="password" class="form-control" id="loginPassword" name="password" required>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">ログイン</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-body">
+        <h2 class="card-title text-center">新規登録</h2>
+        <form method="POST" action="{{ url_for('login') }}">
+          <input type="hidden" name="action" value="register">
+          <div class="mb-3">
+            <label for="registerEmail" class="form-label">メールアドレス</label>
+            <input type="email" class="form-control" id="registerEmail" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label for="registerPassword" class="form-label">パスワード</label>
+            <input type="password" class="form-control" id="registerPassword" name="password" required>
+          </div>
+          <button type="submit" class="btn btn-success w-100">登録する</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

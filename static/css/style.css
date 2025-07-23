@@ -1,0 +1,293 @@
+/* static/css/style.css */
+
+/* カラー変数を定義 */
+:root {
+    --primary-color: #005f73;
+    --secondary-color: #0a9396;
+    --background-color: #e9d8a6;
+    --light-background: #f8f9fa;
+    --text-color: #343a40;
+    --accent-color: #ee9b00;
+}
+
+body {
+    background-color: var(--light-background);
+    color: var(--text-color);
+}
+
+.navbar-dark {
+    background-color: var(--primary-color) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-success {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.badge.bg-warning {
+    background-color: var(--accent-color) !important;
+}
+
+/* static/css/style.css の近未来デザイン部分をこれで置き換え */
+
+/* --- 近未来デザイン (全ページ対応・最終版) --- */
+
+/* Googleからフォント「Exo 2」を読み込む */
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;700&display=swap');
+
+/* 変数でテーマカラーを定義 */
+:root {
+    --futuristic-bg: #0d1117; 
+    --futuristic-glow-color: #00aaff;
+    --futuristic-text-color: #e6edf3;
+    --futuristic-glass-bg: rgba(26, 48, 77, 0.75);
+    --futuristic-border-color: rgba(0, 170, 255, 0.5);
+}
+
+/* bodyに新しい背景とフォントを適用 */
+body.futuristic-theme {
+    background-color: var(--futuristic-bg);
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 30px 30px;
+    font-family: 'Exo 2', sans-serif;
+    color: var(--futuristic-text-color);
+}
+
+/* --- 共通コンポーネントのスタイル --- */
+.futuristic-theme h2, .futuristic-theme h4 {
+    color: var(--futuristic-glow-color);
+    text-shadow: 0 0 5px var(--futuristic-glow-color);
+}
+
+.futuristic-theme .card {
+    background-color: var(--futuristic-glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--futuristic-border-color);
+    box-shadow: 0 0 20px rgba(0, 170, 255, 0.2);
+}
+
+.futuristic-theme .card-header {
+    background-color: rgba(0, 170, 255, 0.1);
+    border-bottom: 1px solid var(--futuristic-border-color);
+    color: var(--futuristic-text-color); /* この行を追加 */
+}
+
+.futuristic-theme .form-label {
+    color: var(--futuristic-glow-color);
+}
+
+.futuristic-theme .form-control,
+.futuristic-theme .form-select {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--futuristic-border-color);
+    color: var(--futuristic-text-color);
+}
+
+.futuristic-theme .form-control:focus,
+.futuristic-theme .form-select:focus {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-color: var(--futuristic-glow-color);
+    box-shadow: 0 0 10px var(--futuristic-glow-color);
+    color: #ffffff;
+}
+
+.futuristic-theme .btn-primary {
+    background: rgba(0, 170, 255, 0.25);
+    color: var(--futuristic-text-color);
+    border: 1px solid var(--futuristic-glow-color);
+}
+.futuristic-theme .btn-primary:hover {
+    background: rgba(0, 170, 255, 0.5);
+    color: #ffffff;
+    box-shadow: 0 0 10px var(--futuristic-glow-color);
+}
+
+.futuristic-theme .alert {
+    background-color: var(--futuristic-glass-bg);
+    color: var(--futuristic-text-color);
+    border-color: var(--futuristic-border-color);
+}
+
+
+/* --- 時間割ページのスタイル --- */
+.futuristic-timetable {
+    border: 1px solid var(--futuristic-glow-color);
+    box-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
+    color: var(--futuristic-text-color);
+    border-collapse: separate;
+    border-spacing: 1px;
+}
+.futuristic-timetable th {
+    background-color: transparent !important;
+    color: var(--futuristic-glow-color);
+    text-shadow: 0 0 3px var(--futuristic-glow-color);
+    border-color: var(--futuristic-border-color) !important;
+    font-weight: 700;
+}
+.futuristic-timetable .timetable-cell {
+    background: var(--futuristic-glass-bg);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 170, 255, 0.2);
+    transition: all 0.2s ease-out;
+    transform-style: preserve-3d;
+}
+.futuristic-timetable .timetable-cell:hover {
+    background: rgba(0, 170, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 170, 255, 0.4);
+    transform: perspective(1000px) rotateX(10deg) translateZ(30px);
+    z-index: 10;
+}
+.futuristic-timetable .timetable-cell strong {
+    color: #ffffff;
+    font-weight: 400;
+}
+.futuristic-timetable .timetable-cell .text-muted {
+    color: var(--futuristic-text-color) !important;
+    opacity: 0.8;
+}
+
+/* --- モーダルウィンドウのスタイル --- */
+.futuristic-theme .modal-content {
+    background-color: var(--futuristic-glass-bg);
+    border: 1px solid var(--futuristic-glow-color);
+}
+.futuristic-theme .modal-header {
+    border-bottom: 1px solid var(--futuristic-border-color);
+}
+.futuristic-theme .modal-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(2);
+}
+.futuristic-theme .modal-footer {
+    border-top: 1px solid var(--futuristic-border-color);
+}
+
+
+/* --- ToDoリストページのスタイル --- */
+.futuristic-theme .list-group-item {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-color: var(--futuristic-border-color);
+    margin-bottom: 5px;
+    border-radius: .25rem;
+}
+.futuristic-theme .list-group-item.text-muted {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+.futuristic-theme .list-group-item del {
+    color: rgba(230, 237, 243, 0.5);
+}
+
+/* static/css/style.css の一番下に追加 */
+
+/* --- 視認性の最終調整 --- */
+
+/* カードボディ内の基本文字色を明るくする */
+.futuristic-theme .card-body {
+    color: var(--futuristic-text-color);
+}
+
+/* カードボディ内のh5, h6といった小見出しの色を調整 */
+.futuristic-theme .card-body h5,
+.futuristic-theme .card-body h6 {
+    color: var(--futuristic-glow-color);
+}
+
+/* レビュー一覧などのリストアイテムの文字色を調整 */
+.futuristic-theme .list-group-item,
+.futuristic-theme .list-group-item p {
+    color: var(--futuristic-text-color);
+}
+
+/* 打ち消し線の文字色も調整 */
+.futuristic-theme .list-group-item del {
+    color: rgba(230, 237, 243, 0.6);
+}
+
+/* 説明用のtext-mutedクラスの色も再指定 */
+.futuristic-theme .list-group-item .text-muted {
+    color: var(--futuristic-text-color) !important;
+    opacity: 0.7;
+}
+
+/* static/css/style.css の一番下に追加 */
+
+/* --- UIの最終仕上げ --- */
+
+/* 入力欄のプレースホルダー（ヒントテキスト）の色を調整 */
+.futuristic-theme .form-control::placeholder {
+    color: var(--futuristic-text-color);
+    opacity: 0.5;
+}
+
+/* カードのフッター（出席履歴など）のスタイル */
+.futuristic-theme .card-footer {
+    background-color: transparent;
+    border-top: 1px solid var(--futuristic-border-color);
+}
+.futuristic-theme .card-footer h6 {
+    color: var(--futuristic-glow-color);
+}
+
+/* ToDoリストの「未完了のタスクはありません」などの文字色を修正 */
+.futuristic-theme .list-group-item.text-muted {
+    opacity: 0.7;
+}
+
+/* セレクトボックス（ドロップダウン）の選択肢のスタイル */
+.futuristic-theme .form-select option {
+    background-color: var(--futuristic-bg); /* ドロップダウンの背景色 */
+    color: var(--futuristic-text-color);
+}
+
+/* static/css/style.css の一番下に追加 */
+
+/* --- クッキークリッカーゲームのスタイル --- */
+#cookie-container {
+    position: relative;
+    width: 256px;
+    height: 256px;
+    margin: 0 auto;
+}
+
+#cookie {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    -webkit-user-select: none; /* テキスト選択を無効化 */
+    user-select: none;
+    transition: transform 0.1s ease-out;
+}
+
+/* クッキーをクリックしたときに少し縮むアニメーション */
+#cookie:active {
+    transform: scale(0.95);
+}
+
+#store .list-group-item {
+background-color: rgba(0,0,0,0.2);
+border-color: var(--futuristic-border-color);
+margin-bottom: 5px; /* アイテム間の間隔を追加 /
+padding: 10px; / パディングを増やしてクリック範囲を広げる */
+}
+#store .list-group-item:hover {
+background-color: rgba(0, 170, 255, 0.2);
+}
+
+#store .list-group-item:disabled {
+    background-color: rgba(0,0,0,0.4);
+    color: #6c757d;
+    cursor: not-allowed;
+}

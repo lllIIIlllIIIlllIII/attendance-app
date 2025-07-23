@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}{{ class_obj.name }} - 出席記録{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ url_for('timetable') }}">時間割</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ class_obj.name }}</li>
+  </ol>
+</nav>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h3>{{ class_obj.name }} <small class="text-muted">({{ ['月','火','水','木','金'][class_obj.day_of_week] }}曜 {{ class_obj.period }}限)</small></h3>
+        <p class="mb-0">担当: {{ class_obj.teacher }} | 教室: {{ class_obj.room }}</p>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">楽単度スコア (5点満点)</h5>
+      {% if reviews %}
+        <p class="mb-0">テストの易しさ: <strong>{{ "%.1f"|format(avg_scores.difficulty) }}</strong> 点</p>
+        <p class="mb-0">課題の少なさ: <strong>{{ "%.1f"|format(avg_scores.assignments) }}</strong> 点</p>
+      {% else %}
+        <p class="text-muted">まだ評価がありません。</p>
+      {% endif %}
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>本日の出席 ({{ today.strftime('%Y/%m/%d') }})</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('attendance', class_id=class_obj.id) }}" class="d-flex gap-2 flex-wrap">
+            <button type="submit" name="status" value="出席" class="btn btn-success">出席</button>
+            <button type="submit" name="status" value="遅刻" class="btn btn-warning">遅刻</button>
+            <button type="submit" name="status" value="欠席" class="btn btn-danger">欠席</button>
+            <button type="submit" name="status" value="休講" class="btn btn-info">休講</button>
+        </form>
+    </div>
+    <div class="card-footer">
+        <h6>出席履歴</h6>
+        <ul class="list-group">
+            {% for att in attendances %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ att.date.strftime('%Y/%m/%d (%a)') }}
+                {% if att.status == '出席' %}
+                    <span class="badge bg-success rounded-pill">{{ att.status }}</span>
+                {% elif att.status == '遅刻' %}
+                    <span class="badge bg-warning rounded-pill">{{ att.status }}</span>
+                {% elif att.status == '欠席' %}
+                    <span class="badge bg-danger rounded-pill">{{ att.status }}</span>
+                {% else %}
+                    <span class="badge bg-info rounded-pill">{{ att.status }}</span>
+                {% endif %}
+            </li>
+            {% else %}
+            <li class="list-group-item">まだ出席記録がありません。</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header">
+    <h5>資料のアップロードと管理</h5>
+  </div>
+  <div class="card-body">
+    <h6 class="card-title">新規資料アップロード</h6>
+    <form method="POST" action="{{ url_for('attendance', class_id=class_obj.id) }}" enctype="multipart/form-data">
+        <div class="input-group mb-3">
+            <input type="file" class="form-control" name="material" required>
+        </div>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" name="description" placeholder="ファイルの説明 (任意)">
+            <button class="btn btn-primary" type="submit">アップロード</button>
+        </div>
+    </form>
+    <hr>
+    <h6 class="card-title mt-4">アップロード済み資料</h6>
+    <ul class="list-group">
+        {% for material in materials %}
+            <li class="list-group-item">
+                <a href="{{ url_for('uploaded_file', filename=material.filename) }}" target="_blank">{{ material.filename }}</a>
+                <p class="text-muted small mb-0">{{ material.description or '説明なし' }} - {{ material.uploaded_at.strftime('%Y-%m-%d') }}</p>
+            </li>
+        {% else %}
+            <li class="list-group-item">アップロードされた資料はありません。</li>
+        {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header">
+    <h5>この授業を評価する</h5>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{{ url_for('attendance', class_id=class_obj.id) }}">
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">テストの易しさ (易しいほど高評価)</label>
+          <select class="form-select" name="difficulty" required>
+            <option value="5">5: 楽勝</option>
+            <option value="4">4: やや易しい</option>
+            <option value="3">3: 普通</option>
+            <option value="2">2: やや難しい</option>
+            <option value="1">1: 難しい</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">課題の量 (少ないほど高評価)</label>
+          <select class="form-select" name="assignments" required>
+            <option value="5">5: 無い/非常に少ない</option>
+            <option value="4">4: 少なめ</option>
+            <option value="3">3: 普通</option>
+            <option value="2">2: 多め</option>
+            <option value="1">1: 非常に多い</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">内容の面白さ</label>
+          <select class="form-select" name="interest" required>
+            <option value="5">5: とても面白い</option>
+            <option value="4">4: 面白い</option>
+            <option value="3">3: 普通</option>
+            <option value="2">2: あまり面白くない</option>
+            <option value="1">1: 全く面白くない</option>
+          </select>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="comment" class="form-label">コメント (任意)</label>
+        <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">評価を投稿する</button>
+    </form>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header">
+    <h5>レビュー一覧 ({{ reviews|length }}件)</h5>
+  </div>
+  <ul class="list-group list-group-flush">
+    {% for review in reviews %}
+      <li class="list-group-item">
+        <p class="mb-1"><strong>面白さ:</strong> {{ review.interest }} | <strong>テスト:</strong> {{ review.difficulty }} | <strong>課題:</strong> {{ review.assignments }}</p>
+        <p class="mb-1 fst-italic">「{{ review.comment or 'コメントはありません' }}」</p>
+        <small class="text-muted">{{ review.created_at.strftime('%Y-%m-%d') }}</small>
+      </li>
+    {% else %}
+      <li class="list-group-item">まだレビューがありません。</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-5 text-center">
+            <h4>クッキーを焼く</h4>
+            <div id="cookie-container">
+                <img src="https://orteil.dashnet.org/cookieclicker/img/perfectCookie.png" alt="Cookie" id="cookie" draggable="false">
+            </div>
+            <p class="mt-2 h5">所持クッキー: <span id="cookie-count">0</span></p>
+            <p class="text-muted small">毎秒: <span id="cps-count">0</span> クッキー</p>
+        </div>
+
+        <div class="col-md-7">
+            <h4>店</h4>
+            <div id="store" class="list-group">
+                </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// --- ゲームの初期設定 ---
+const game = {
+    cookies: 0,
+    cps: 0,
+    buildings: {
+        cursor: {
+            name: "オートクリッカー",
+            count: 0,
+            power: 1, // 1つあたり毎秒0.1クッキー生産
+            baseCost: 15
+        },
+        grandma: {
+            name: "おばあちゃん",
+            count: 0,
+            power: 10, // 1人あたり毎秒1クッキー生産
+            baseCost: 100
+        },
+        farm: {
+            name: "クッキー畑",
+            count: 0,
+            power: 100,
+            baseCost: 1100
+        }
+    }
+};
+
+// --- HTML要素の取得 ---
+const cookieEl = document.getElementById('cookie');
+const cookieCountEl = document.getElementById('cookie-count');
+const cpsCountEl = document.getElementById('cps-count');
+const storeEl = document.getElementById('store');
+
+// --- ゲームのコア機能 ---
+
+// クッキーをクリックしたときの処理
+cookieEl.addEventListener('click', () => {
+    game.cookies++;
+    updateUI();
+});
+
+// 店の建物をクリックしたときの処理
+function buyBuilding(buildingName) {
+    const building = game.buildings[buildingName];
+    const currentCost = Math.ceil(building.baseCost * Math.pow(1.15, building.count));
+
+    if (game.cookies >= currentCost) {
+        game.cookies -= currentCost;
+        building.count++;
+        game.cps = calculateCPS();
+        updateUI();
+    }
+}
+
+// 現在のCPS（毎秒クッキー生産量）を計算する
+function calculateCPS() {
+    let totalCPS = 0;
+    for (let key in game.buildings) {
+        totalCPS += game.buildings[key].count * game.buildings[key].power;
+    }
+    return totalCPS;
+}
+
+// --- UIの更新 ---
+
+// UI全体を最新の状態に更新する
+function updateUI() {
+    cookieCountEl.textContent = Math.floor(game.cookies).toLocaleString();
+    cpsCountEl.textContent = game.cps.toFixed(1);
+
+    // 店の表示を更新
+    storeEl.innerHTML = '';
+    for (let key in game.buildings) {
+        const building = game.buildings[key];
+        const currentCost = Math.ceil(building.baseCost * Math.pow(1.15, building.count));
+        
+        const buildingEl = document.createElement('button');
+        buildingEl.className = 'list-group-item list-group-item-action';
+        buildingEl.disabled = game.cookies < currentCost;
+        buildingEl.onclick = () => buyBuilding(key);
+        
+        buildingEl.innerHTML = `
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">${building.name}</h5>
+                <small>所持: ${building.count}</small>
+            </div>
+            <p class="mb-1">コスト: ${currentCost.toLocaleString()}</p>
+        `;
+        storeEl.appendChild(buildingEl);
+    }
+}
+
+// --- ゲームループ ---
+
+// 1秒ごとにクッキーを自動で増やす
+const gameLoop = setInterval(() => {
+    game.cookies += game.cps;
+    // UIは下のループで更新するのでここでは不要
+}, 1000);
+
+// 0.1秒ごとにUIを更新（表示を滑らかに）
+const uiLoop = setInterval(() => {
+    updateUI();
+}, 100);
+
+// 初期UIの表示
+updateUI();
+
+</script>
+
+{% endblock %}

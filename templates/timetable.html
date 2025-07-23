@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}時間割 - 出席マネージャー{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>時間割</h2>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#classModal" onclick="clearForm()">
+        新規授業追加
+    </button>
+</div>
+
+<div class="table-responsive">
+   <table class="table text-center futuristic-timetable">
+        <thead>
+            <tr>
+                <th></th>
+                <th>月</th>
+                <th>火</th>
+                <th>水</th>
+                <th>木</th>
+                <th>金</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for period in range(1, 6) %}
+            <tr>
+                <th>{{ period }}限</th>
+                {% for day in range(5) %}
+                <td class="timetable-cell">
+                    {% set class_obj = timetable[day][period-1] %}
+                    {% if class_obj %}
+                        <div class="d-flex flex-column h-100">
+                            <div>
+                                <strong>{{ class_obj.name }}</strong><br>
+                                <small class="text-muted">{{ class_obj.teacher }} / {{ class_obj.room }}</small>
+                            </div>
+                            
+                            {% if difficulties[class_obj.id] %}
+                            <div class="my-auto text-center">
+                                <span class="badge bg-warning text-dark">
+                                    今日の出席難易度:<br>
+                                    {{ difficulties[class_obj.id] }}
+                                </span>
+                            </div>
+                            {% endif %}
+                        
+                            <div class="mt-auto">
+                                <a href="{{ url_for('attendance', class_id=class_obj.id) }}" class="btn btn-sm btn-info mb-1">詳細</a>
+                                <button class="btn btn-sm btn-secondary mb-1" data-bs-toggle="modal" data-bs-target="#classModal"
+                                        onclick="editForm('{{ class_obj.id }}', '{{ class_obj.name }}', '{{ class_obj.teacher }}', '{{ class_obj.room }}', '{{ class_obj.period }}', '{{ class_obj.day_of_week }}')">
+                                    編集
+                                </button>
+                            </div>
+                        </div>
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="classModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="classForm" method="POST" action="{{ url_for('timetable') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">授業を編集</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="classId" name="class_id">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">授業名</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="teacher" class="form-label">担当教員</label>
+                        <input type="text" class="form-control" id="teacher" name="teacher">
+                    </div>
+                    <div class="mb-3">
+                        <label for="room" class="form-label">教室</label>
+                        <input type="text" class="form-control" id="room" name="room">
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label for="day_of_week" class="form-label">曜日</label>
+                            <select class="form-select" id="day_of_week" name="day_of_week" required>
+                                <option value="0">月曜</option>
+                                <option value="1">火曜</option>
+                                <option value="2">水曜</option>
+                                <option value="3">木曜</option>
+                                <option value="4">金曜</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="period" class="form-label">時限</label>
+                            <select class="form-select" id="period" name="period" required>
+                                <option value="1">1限</option>
+                                <option value="2">2限</option>
+                                <option value="3">3限</option>
+                                <option value="4">4限</option>
+                                <option value="5">5限</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div id="deleteButtonContainer" class="me-auto"></div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+            <form id="deleteForm" method="POST" style="display: none;">
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function clearForm() {
+    document.getElementById('modalTitle').innerText = '新規授業追加';
+    document.getElementById('classForm').action = "{{ url_for('timetable') }}";
+    document.getElementById('classId').value = '';
+    document.getElementById('name').value = '';
+    document.getElementById('teacher').value = '';
+    document.getElementById('room').value = '';
+    document.getElementById('day_of_week').value = '0';
+    document.getElementById('period').value = '1';
+    document.getElementById('deleteButtonContainer').innerHTML = '';
+}
+
+function editForm(id, name, teacher, room, period, day_of_week) {
+    document.getElementById('modalTitle').innerText = '授業を編集';
+    document.getElementById('classForm').action = "{{ url_for('timetable') }}";
+    document.getElementById('classId').value = id;
+    document.getElementById('name').value = name;
+    document.getElementById('teacher').value = teacher;
+    document.getElementById('room').value = room;
+    document.getElementById('day_of_week').value = day_of_week;
+    document.getElementById('period').value = period;
+    
+    let deleteBtn = `<form action="/class/delete/${id}" method="POST" onsubmit="return confirm('本当にこの授業を削除しますか？');">
+                       <button type="submit" class="btn btn-danger">削除</button>
+                     </form>`;
+    document.getElementById('deleteButtonContainer').innerHTML = deleteBtn;
+}
+</script>
+
+{% endblock %}
